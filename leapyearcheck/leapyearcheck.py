@@ -11,10 +11,12 @@ window = sg.Window('Проверка года на високосный', layout
 
 def year_check():
     print(values)
+    # берем строку по ключу и преобразуем в число
     year = int(values['-INPUT-'])
     leap = 'Високосный'
     regular = 'Обычный'
 
+    # 2 условия
     if year % 4 == 0 or (year % 100 != 0 and year % 400 == 0):
         print(leap)
     else:
