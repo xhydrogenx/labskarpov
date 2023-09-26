@@ -4,7 +4,9 @@ layout = [
     [sg.Text('Введите год', size=(25, 1), key='-text-', font='Helvetica 16')],
     [sg.InputText('', enable_events=True, key='-INPUT-', font='Helvetica 16')],
     [sg.Button('Проверить', enable_events=True, key='-FUNCTION-', font='Helvetica 16')],
-    [sg.Text('Результат:', size=(25, 1), key='-text-', font='Helvetica 16')]]
+    [sg.Text('Результат:', size=(25, 1), key='-text-', font='Helvetica 16')],
+    [sg.Output(size=(80, 20))]
+    ]
 
 window = sg.Window('Проверка года на високосный', layout, size=(350, 350))
 
