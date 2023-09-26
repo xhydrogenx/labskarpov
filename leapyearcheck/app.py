@@ -1,12 +1,33 @@
-from PyQt6.QtWidgets import QApplication, QWidget
-
 import sys
+from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton
 
-# Разрешает аргументы командной строки для приложения
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.button_is_checked = True
+
+        self.setWindowTitle("My App")
+
+        self.button = QPushButton("Press Me!")
+        self.button.setCheckable(True)
+        self.button.released.connect(self.the_button_was_released)
+        self.button.setChecked(self.button_is_checked)
+
+        self.setCentralWidget(self.button)
+
+    def the_button_was_released(self):
+        self.button_is_checked = self.button.isChecked()
+
+        print(self.button_is_checked)
+
+#     checked - состояние кнопки когда она зажата
+
+
 app = QApplication(sys.argv)
 
-# Создание виджета
-window = QWidget()
+window = MainWindow()
 window.show()
 
 app.exec()
