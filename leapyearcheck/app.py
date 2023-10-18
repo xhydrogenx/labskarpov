@@ -1,45 +1,57 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton
+
+from PyQt6.QtCore import QSize
+from PyQt6.QtWidgets import (
+    QMainWindow, QApplication, QVBoxLayout, QWidget,
+    QLabel, QLineEdit, QPushButton
+)
 
 
 class MainWindow(QMainWindow):
+
     def __init__(self):
         super().__init__()
 
-        self.button_is_checked = True
+        self.setWindowTitle("Проверка на високосный")
+        self.setFixedSize(QSize(300, 150))
 
-        self.setWindowTitle("My App")
+        # Создаем виджеты
+        central_widget = QWidget(self)
+        self.setCentralWidget(central_widget)
 
-        self.button = QPushButton("Press Me!")
-        self.button.setCheckable(True)
-        self.button.released.connect(self.the_button_was_released)
-        self.button.setChecked(self.button_is_checked)
+        layout = QVBoxLayout()
 
-        self.setCentralWidget(self.button)
+        label = QLabel("Введите год:", self)
+        layout.addWidget(label)
 
-    def the_button_was_released(self):
-        self.button_is_checked = self.button.isChecked()
+        input_widget = QLineEdit(self)
+        input_widget.setPlaceholderText('Введите год')
+        layout.addWidget(input_widget)
 
-        print(self.button_is_checked)
+        result_label = QLabel(self)
+        layout.addWidget(result_label)
 
-#     checked - состояние кнопки когда она зажата
+        button = QPushButton("Проверить", self)
+        layout.addWidget(button)
+
+        # Функция для проверки на високосный год и вывода результата
+        def check_leap_year():
+            year = input_widget.text()
+            try:
+                year = int(year)
+                if (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0):
+                    result_label.setText(f"{year} - високосный год")
+                else:
+                    result_label.setText(f"{year} - не високосный год")
+            except ValueError:
+                result_label.setText("Некорректный ввод")
+
+        button.clicked.connect(check_leap_year)
+
+        central_widget.setLayout(layout)
 
 
 app = QApplication(sys.argv)
-
-window = MainWindow()
-window.show()
-
+w = MainWindow()
+w.show()
 app.exec()
-
-# def year_check():
-#     # берем строку по ключу и преобразуем в число
-#     year =
-#     leap = 'Високосный'
-#     regular = 'Обычный'
-#
-#     # 2 условия
-#     if year % 4 == 0 or (year % 100 != 0 and year % 400 == 0):
-#         print(leap)
-#     else:
-#         print(regular)
