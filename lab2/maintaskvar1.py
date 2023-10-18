@@ -62,10 +62,10 @@ if __name__ == "__main__":
     print(student1.ToShortString())
 
     student1.person.first_name = "Иван"
-    student1.person.last_name = "Иванов"
-    student1.person.birth_date = datetime(1990, 5, 15)
-    student1.education = Education.Specialist
-    student1.group_number = 12345
+    student1.person.last_name = "Карпов"
+    student1.person.birth_date = datetime(1999, 12, 8)
+    student1.education = Education.Bachelor
+    student1.group_number = 'PIB-01'
 
     exam1 = Exam("Математика", 95, datetime(2023, 1, 10))
     exam2 = Exam("Физика", 87, datetime(2023, 1, 15))
