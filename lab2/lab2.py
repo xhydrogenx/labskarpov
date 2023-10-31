@@ -4,14 +4,23 @@ from datetime import datetime
 class Person:
     def __init__(self, first_name="", last_name="", birth_date=datetime(2000, 1, 1)):
         # имя, фамилия, дата рождения
+        # В питоне не существует такого понятия как закрытое поле,
+        # вместо этого используются специальные обозначения переменных,
+        # делящиеся на Private, Protected и Public, в данном случае используется protected
+        # Данные обозначения никак не влияют на исполнение кода, нужны только для разработчиков
         self._first_name = first_name
         self._last_name = last_name
         self._birth_date = birth_date
 
+    # Этот декоратор используется для определения свойства, которое можно читать (геттер).
+    # Он позволяет получать значение, связанное с атрибутом first_name, last_name, birth_date,
+    # как если бы они были обычными атрибутами объекта.
     @property
     def first_name(self):
         return self._first_name
 
+    # Сеттеры используются для определения методов,
+    # которые будут вызываться при попытке установить значение свойства (сеттер).
     @first_name.setter
     def first_name(self, value):
         self._first_name = value
@@ -47,7 +56,7 @@ class Person:
         return f"{self._first_name} {self._last_name}"
 
 
-
+# пример
 person = Person("Иван", "Карпов", datetime(1999, 12, 8))
 print(person.to_full_string())  # Вывод полной информации
 print(person.to_short_string())  # Вывод краткой информации (имя и фамилия)
