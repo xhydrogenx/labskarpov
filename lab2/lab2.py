@@ -3,6 +3,7 @@ from datetime import datetime
 
 class Person:
     def __init__(self, first_name="", last_name="", birth_date=datetime(2000, 1, 1)):
+        # имя, фамилия, дата рождения
         self._first_name = first_name
         self._last_name = last_name
         self._birth_date = birth_date
@@ -39,17 +40,17 @@ class Person:
     def birth_year(self, value):
         self._birth_date = self._birth_date.replace(year=value)
 
-    def ToFullString(self):
+    def to_full_string(self):
         return f"Имя: {self._first_name}, Фамилия: {self._last_name}, Дата рождения: {self._birth_date}"
 
-    def ToShortString(self):
+    def to_short_string(self):
         return f"{self._first_name} {self._last_name}"
 
 
-# Пример использования класса Person:
+
 person = Person("Иван", "Карпов", datetime(1999, 12, 8))
-print(person.ToFullString())  # Вывод полной информации
-print(person.ToShortString())  # Вывод краткой информации (имя и фамилия)
+print(person.to_full_string())  # Вывод полной информации
+print(person.to_short_string())  # Вывод краткой информации (имя и фамилия)
 print(person.birth_year)  # Вывод года рождения
 person.birth_year = 1985  # Изменение года рождения
-print(person.ToFullString())  # Вывод обновленной информации
+print(person.to_full_string())  # Вывод обновленной информации
