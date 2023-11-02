@@ -1,13 +1,14 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QMainWindow, QToolBar, QPushButton, QWidget
+from PyQt6.QtWidgets import QApplication, QMainWindow, QToolBar, QPushButton, QVBoxLayout, QWidget, QGroupBox, QSlider
 from PyQt6.QtGui import QAction
+from PyQt6.QtCore import Qt
 
 
 class GraphicsEditor(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        # Создание меню
+        # Создаем меню
         menubar = self.menuBar()
         file_menu = menubar.addMenu("Файл")
         help_menu = menubar.addMenu("Справка")
@@ -39,11 +40,28 @@ class GraphicsEditor(QMainWindow):
         self.addToolBar(tools_panel)
         self.setCentralWidget(draw_panel)
 
-        # Добавление кнопок на панель инструментов
-        brush_button = QPushButton("Кисть")
-        color_button = QPushButton("Цвет")
-        tools_panel.addWidget(brush_button)
-        tools_panel.addWidget(color_button)
+        # Добавление GroupBox'а "Выбор кисти" на панель инструментов
+        brush_group = QGroupBox("Выбор кисти", self)
+        brush_group.setCheckable(True)
+        brush_group.setChecked(True)
+        tools_panel.addWidget(brush_group)
+
+        # Создание QSlider для размера кисти
+        brush_size_slider = QSlider(Qt.Orientation.Horizontal, self)
+        brush_size_slider.setValue(10)
+        brush_size_slider.setTickPosition(QSlider.TickPosition.TicksAbove)
+        brush_size_slider.setTickInterval(5)
+        brush_size_slider.setObjectName("brushSizeSlider")
+        brush_group.setLayout(QVBoxLayout())
+        brush_group.layout().addWidget(brush_size_slider)
+
+        # Создание кнопок для выбора кисти
+        brush1_button = QPushButton("Кисть 1", self)
+        brush2_button = QPushButton("Кисть 2", self)
+        brush3_button = QPushButton("Кисть 3", self)
+        brush_group.layout().addWidget(brush1_button)
+        brush_group.layout().addWidget(brush2_button)
+        brush_group.layout().addWidget(brush3_button)
 
         # Функция-обработчик действий
         exit_action.triggered.connect(self.close)
