@@ -1,13 +1,16 @@
 import sys
+
 from PyQt6.QtCore import Qt, QRect, QSize
-from PyQt6.QtGui import QAction, QImage, QPainter, QColor, QPen
-from PyQt6.QtWidgets import QApplication, QMainWindow, QToolBar, QPushButton, QVBoxLayout, QWidget, QGroupBox, QSlider
+from PyQt6.QtGui import QAction, QImage, QPainter, QColor, QPen, QCursor
+from PyQt6.QtWidgets import QApplication, QMainWindow, QToolBar, QPushButton, QWidget, QGroupBox, QSlider, \
+    QComboBox, QHBoxLayout
 
 
 class GraphicsEditor(QMainWindow):
     def __init__(self):
         super().__init__()
 
+        self.drawing_area = None
         self.background_color = QColor(Qt.GlobalColor.white)
         self.brush_color = QColor(Qt.GlobalColor.red)
         self.brush_type = "Square"
@@ -63,32 +66,30 @@ class GraphicsEditor(QMainWindow):
         brush_size_slider.setTickPosition(QSlider.TickPosition.TicksAbove)
         brush_size_slider.setTickInterval(1)
         brush_size_slider.setObjectName("brushSizeSlider")
+        brush_size_slider.setGeometry(240, 35, 200, 45)
         brush_size_slider.valueChanged.connect(self.set_brush_size)
 
-        # Кнопки для выбора типа кисти
-        square_brush_button = QPushButton("Квадратная", self)
-        square_brush_button.clicked.connect(lambda: self.set_brush_type("Square"))
-        rectangular_brush_button = QPushButton("Прямоугольная", self)
-        rectangular_brush_button.clicked.connect(lambda: self.set_brush_type("Rectangle"))
-        circular_brush_button = QPushButton("Круглая", self)
-        circular_brush_button.clicked.connect(lambda: self.set_brush_type("Circle"))
+        # Компоновщик для кнопок выбора типа кисти
+        brush_layout = QHBoxLayout()
+
+        # Выпадающий список для выбора типа кисти
+        brush_type_combo = QComboBox(self)
+        brush_type_combo.addItem("Квадратная")
+        brush_type_combo.addItem("Прямоугольная")
+        brush_type_combo.addItem("Круглая")
+        brush_type_combo.currentIndexChanged.connect(self.set_brush_type)
 
         # Кнопка для очистки
         clear_button = QPushButton("Очистить", self)
         clear_button.clicked.connect(self.clear_drawing_area)
 
-        # Компоновщик для кнопок выбора кисти и кнопки очистки
-        brush_layout = QVBoxLayout()
-        brush_layout.addWidget(square_brush_button)
-        brush_layout.addWidget(rectangular_brush_button)
-        brush_layout.addWidget(circular_brush_button)
+        # Добавление выпадающего список и кнопку в компоновщик
+        brush_layout.addWidget(brush_type_combo)
         brush_layout.addWidget(clear_button)
 
-        # Компоновщик для всей группы выбора кисти
-        group_layout = QVBoxLayout()
-        group_layout.addWidget(brush_size_slider)
-        group_layout.addLayout(brush_layout)
-        brush_group.setLayout(group_layout)
+        # Геометрия компоновки
+        brush_group.setLayout(brush_layout)
+        brush_group.setGeometry(100, 100, 300, 100)
 
         # Функция-обработчик действий
         exit_action.triggered.connect(self.close)
@@ -105,11 +106,23 @@ class GraphicsEditor(QMainWindow):
         self.image.fill(self.background_color)
         self.drawing = False
 
+        # Ограничение области рисования
+        drawing_width = 800
+        drawing_height = 480
+        x = (self.width() - drawing_width) // 2  # Центрирование по горизонтали
+        y = self.height() - drawing_height  # Размещение снизу
+        drawing_area = QRect(x, y, drawing_width, drawing_height)
+        self.drawing_area = drawing_area
+
+    def setCursorPos(self, pos):
+        QCursor.setPos(pos)
+
     def set_brush_size(self, size):
         self.brush_size = size
 
-    def set_brush_type(self, brush_type):
-        self.brush_type = brush_type
+    def set_brush_type(self, index):
+        brush_types = ["Square", "Rectangle", "Circle"]
+        self.brush_type = brush_types[index]
 
     def clear_drawing_area(self):
         self.image.fill(self.background_color)
@@ -127,25 +140,28 @@ class GraphicsEditor(QMainWindow):
 
     def mouseMoveEvent(self, event):
         if event.buttons() and Qt.MouseButton.LeftButton and self.drawing:
-            painter = QPainter(self.image)
-            pen = QPen()
-            pen.setColor(self.brush_color)
-            pen.setWidth(self.brush_size)
-            pen.setCapStyle(Qt.PenCapStyle.RoundCap)
-            painter.setPen(pen)
+            if self.drawing_area.contains(event.pos()):
+                painter = QPainter(self.image)
+                pen = QPen()
+                pen.setColor(self.brush_color)
+                pen.setWidth(self.brush_size)
+                pen.setCapStyle(Qt.PenCapStyle.RoundCap)
+                painter.setPen(pen)
 
-            if self.brush_type == "Square":
-                square_rect = QRect(self.last_point, event.pos())
-                painter.drawRect(square_rect)
-            elif self.brush_type == "Rectangle":
-                painter.drawLine(self.last_point, event.pos())
-            elif self.brush_type == "Circle":
-                circle_rect = QRect(self.last_point, event.pos())
-                circle_rect.setSize(QSize(self.brush_size, self.brush_size))
-                painter.drawEllipse(circle_rect)
+                if self.brush_type == "Square":
+                    square_rect = QRect(self.last_point, event.pos())
+                    square_rect &= self.drawing_area  # Ограничение области рисования
+                    painter.drawRect(square_rect)
+                elif self.brush_type == "Rectangle":
+                    painter.drawLine(self.last_point, event.pos())
+                elif self.brush_type == "Circle":
+                    circle_rect = QRect(self.last_point, event.pos())
+                    circle_rect.setSize(QSize(self.brush_size, self.brush_size))
+                    circle_rect &= self.drawing_area  # Ограничение области рисования
+                    painter.drawEllipse(circle_rect)
 
-            self.last_point = event.pos()
-            self.update()
+                self.last_point = event.pos()
+                self.update()
 
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
