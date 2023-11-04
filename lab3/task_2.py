@@ -82,6 +82,7 @@ class GraphicsEditor(QMainWindow):
         brush_type_combo.addItem("Треугольная")
         brush_type_combo.addItem("Звезда")
         brush_type_combo.addItem("Кардиоида")
+        brush_type_combo.addItem("Ластик")
 
         brush_type_combo.currentIndexChanged.connect(self.set_brush_type)
 
@@ -127,7 +128,7 @@ class GraphicsEditor(QMainWindow):
         self.brush_size = size
 
     def set_brush_type(self, index):
-        brush_types = ["Square", "Rectangle", "Circle", "Triangle", "Star", "Cardioid"]
+        brush_types = ["Square", "Rectangle", "Circle", "Triangle", "Star", "Cardioid", "Eraser"]
         self.brush_type = brush_types[index]
 
     def clear_drawing_area(self):
@@ -148,13 +149,27 @@ class GraphicsEditor(QMainWindow):
         if event.buttons() and Qt.MouseButton.LeftButton and self.drawing:
             if self.drawing_area.contains(event.pos()):
                 painter = QPainter(self.image)
-                pen = QPen()
-                pen.setColor(QColor(Qt.GlobalColor.red))
                 brush = QBrush()
-                brush.setColor(self.brush_color)
-                brush.setStyle(Qt.BrushStyle.SolidPattern)
-                painter.setPen(pen)
-                painter.setBrush(brush)
+
+                if self.brush_type == "Eraser":
+                    pen = QPen()
+                    pen.setColor(self.background_color)
+                    eraser_rect = QRect(self.last_point, event.pos())
+                    eraser_rect &= self.drawing_area
+                    eraser_rect.setSize(QSize(self.brush_size, self.brush_size))
+                    brush.setColor(self.background_color)
+                    brush.setStyle(Qt.BrushStyle.SolidPattern)
+                    painter.setPen(pen)
+                    painter.setBrush(brush)
+                    painter.drawRect(eraser_rect)
+
+                else:
+                    pen = QPen()
+                    pen.setColor(QColor(Qt.GlobalColor.red))
+                    brush.setColor(self.brush_color)
+                    brush.setStyle(Qt.BrushStyle.SolidPattern)
+                    painter.setPen(pen)
+                    painter.setBrush(brush)
 
                 if self.brush_type == "Square":
                     square_rect = QRect(self.last_point, event.pos())
