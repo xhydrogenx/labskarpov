@@ -1,7 +1,7 @@
 import sys
 
-from PyQt6.QtCore import Qt, QRect, QSize
-from PyQt6.QtGui import QAction, QImage, QPainter, QColor, QPen, QCursor
+from PyQt6.QtCore import Qt, QRect, QSize, QPoint, QPointF
+from PyQt6.QtGui import QAction, QImage, QPainter, QColor, QPen, QCursor, QBrush, QPolygon
 from PyQt6.QtWidgets import QApplication, QMainWindow, QToolBar, QPushButton, QWidget, QGroupBox, QSlider, \
     QComboBox, QHBoxLayout
 
@@ -77,6 +77,9 @@ class GraphicsEditor(QMainWindow):
         brush_type_combo.addItem("Квадратная")
         brush_type_combo.addItem("Прямоугольная")
         brush_type_combo.addItem("Круглая")
+        brush_type_combo.addItem("Треугольная")
+        brush_type_combo.addItem("Окружность")
+
         brush_type_combo.currentIndexChanged.connect(self.set_brush_type)
 
         # Кнопка для очистки
@@ -121,7 +124,7 @@ class GraphicsEditor(QMainWindow):
         self.brush_size = size
 
     def set_brush_type(self, index):
-        brush_types = ["Square", "Rectangle", "Circle"]
+        brush_types = ["Square", "Rectangle", "Circle", "Triangle", "Round"]
         self.brush_type = brush_types[index]
 
     def clear_drawing_area(self):
@@ -143,22 +146,49 @@ class GraphicsEditor(QMainWindow):
             if self.drawing_area.contains(event.pos()):
                 painter = QPainter(self.image)
                 pen = QPen()
-                pen.setColor(self.brush_color)
-                pen.setWidth(self.brush_size)
-                pen.setCapStyle(Qt.PenCapStyle.RoundCap)
+                pen.setColor(QColor(Qt.GlobalColor.red))
+                brush = QBrush()
+                brush.setColor(self.brush_color)
+                brush.setStyle(Qt.BrushStyle.SolidPattern)
                 painter.setPen(pen)
+                painter.setBrush(brush)
 
                 if self.brush_type == "Square":
                     square_rect = QRect(self.last_point, event.pos())
-                    square_rect &= self.drawing_area  # Ограничение области рисования
+                    square_rect &= self.drawing_area
+                    square_rect.setSize(QSize(self.brush_size, self.brush_size))
                     painter.drawRect(square_rect)
                 elif self.brush_type == "Rectangle":
-                    painter.drawLine(self.last_point, event.pos())
+                    rect_rect = QRect(self.last_point, event.pos())
+                    rect_rect &= self.drawing_area
+                    rect_rect.setSize(QSize((self.brush_size * 2), self.brush_size))
+                    painter.drawRect(rect_rect)
                 elif self.brush_type == "Circle":
                     circle_rect = QRect(self.last_point, event.pos())
                     circle_rect.setSize(QSize(self.brush_size, self.brush_size))
-                    circle_rect &= self.drawing_area  # Ограничение области рисования
+                    circle_rect &= self.drawing_area
                     painter.drawEllipse(circle_rect)
+                elif self.brush_type == "Triangle":
+                    triangle_points = [
+                        QPoint(self.last_point),
+                        QPoint(int(event.pos().x() - self.brush_size / 2), int(event.pos().y() + self.brush_size)),
+                        QPoint(int(event.pos().x() + self.brush_size / 2), int(event.pos().y() + self.brush_size)),
+                    ]
+                    triangle_polygon = QPolygon(triangle_points)
+                    drawing_polygon = QPolygon([
+                        self.drawing_area.topLeft(),
+                        self.drawing_area.topRight(),
+                        self.drawing_area.bottomRight(),
+                        self.drawing_area.bottomLeft()
+                    ])
+
+                    triangle_polygon = triangle_polygon.intersected(drawing_polygon)
+                    painter.drawPolygon(triangle_polygon)
+                elif self.brush_type == "Round":
+                    round_rect = QRect(self.last_point, event.pos())
+                    round_rect.setSize(QSize(self.brush_size ** 2, self.brush_size ** 2))
+                    round_rect &= self.drawing_area
+                    painter.drawEllipse(round_rect)
 
                 self.last_point = event.pos()
                 self.update()
