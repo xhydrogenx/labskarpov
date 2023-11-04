@@ -1,3 +1,4 @@
+import math
 import sys
 
 from PyQt6.QtCore import Qt, QRect, QSize, QPoint, QPointF
@@ -78,7 +79,7 @@ class GraphicsEditor(QMainWindow):
         brush_type_combo.addItem("Прямоугольная")
         brush_type_combo.addItem("Круглая")
         brush_type_combo.addItem("Треугольная")
-        brush_type_combo.addItem("Окружность")
+        brush_type_combo.addItem("Звезда")
 
         brush_type_combo.currentIndexChanged.connect(self.set_brush_type)
 
@@ -124,7 +125,7 @@ class GraphicsEditor(QMainWindow):
         self.brush_size = size
 
     def set_brush_type(self, index):
-        brush_types = ["Square", "Rectangle", "Circle", "Triangle", "Round"]
+        brush_types = ["Square", "Rectangle", "Circle", "Triangle", "Star"]
         self.brush_type = brush_types[index]
 
     def clear_drawing_area(self):
@@ -184,11 +185,30 @@ class GraphicsEditor(QMainWindow):
 
                     triangle_polygon = triangle_polygon.intersected(drawing_polygon)
                     painter.drawPolygon(triangle_polygon)
-                elif self.brush_type == "Round":
-                    round_rect = QRect(self.last_point, event.pos())
-                    round_rect.setSize(QSize(self.brush_size ** 2, self.brush_size ** 2))
-                    round_rect &= self.drawing_area
-                    painter.drawEllipse(round_rect)
+                elif self.brush_type == "Star":
+                    painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+                    brush = QBrush(self.brush_color)
+
+                    x, y = event.pos().x(), event.pos().y()
+                    size = self.brush_size
+
+                    outer_points = []
+                    inner_points = []
+
+                    for i in range(5):
+                        outer_x = x + size * math.cos(i * 2 * math.pi / 5)
+                        outer_y = y + size * math.sin(i * 2 * math.pi / 5)
+                        outer_points.append(QPointF(outer_x, outer_y))
+
+                        inner_x = x + size / 2 * math.cos((i * 2 + 1) * math.pi / 5)
+                        inner_y = y + size / 2 * math.sin((i * 2 + 1) * math.pi / 5)
+                        inner_points.append(QPointF(inner_x, inner_y))
+
+                    for i in range(5):
+                        painter.drawLine(outer_points[i], inner_points[i])
+                        painter.drawLine(inner_points[i], outer_points[(i + 1) % 5])
+                    painter.drawLine(outer_points[0], inner_points[0])
+                    painter.setRenderHint(QPainter.RenderHint.Antialiasing, False)
 
                 self.last_point = event.pos()
                 self.update()
