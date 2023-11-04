@@ -1,4 +1,5 @@
 import math
+import random
 import sys
 
 from PyQt6.QtCore import Qt, QRect, QSize, QPoint, QPointF
@@ -80,6 +81,7 @@ class GraphicsEditor(QMainWindow):
         brush_type_combo.addItem("Круглая")
         brush_type_combo.addItem("Треугольная")
         brush_type_combo.addItem("Звезда")
+        brush_type_combo.addItem("Кардиоида")
 
         brush_type_combo.currentIndexChanged.connect(self.set_brush_type)
 
@@ -125,7 +127,7 @@ class GraphicsEditor(QMainWindow):
         self.brush_size = size
 
     def set_brush_type(self, index):
-        brush_types = ["Square", "Rectangle", "Circle", "Triangle", "Star"]
+        brush_types = ["Square", "Rectangle", "Circle", "Triangle", "Star", "Cardioid"]
         self.brush_type = brush_types[index]
 
     def clear_drawing_area(self):
@@ -208,6 +210,31 @@ class GraphicsEditor(QMainWindow):
                         painter.drawLine(outer_points[i], inner_points[i])
                         painter.drawLine(inner_points[i], outer_points[(i + 1) % 5])
                     painter.drawLine(outer_points[0], inner_points[0])
+                    painter.setRenderHint(QPainter.RenderHint.Antialiasing, False)
+
+                elif self.brush_type == "Cardioid":
+
+                    painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+                    brush = QBrush(self.brush_color)
+                    x, y = event.pos().x(), event.pos().y()
+                    size = self.brush_size
+                    cardioid_points = []
+                    num_points = 100
+
+                    for i in range(num_points):
+                        t = 2 * math.pi * i / num_points
+
+                        r = size * (1 - math.cos(t))
+
+                        x_point = x + r * math.cos(t)
+
+                        y_point = y + r * math.sin(t)
+
+                        cardioid_points.append(QPointF(x_point, y_point))
+
+                    for i in range(num_points):
+                        painter.drawLine(cardioid_points[i], cardioid_points[(i + 1) % num_points])
+
                     painter.setRenderHint(QPainter.RenderHint.Antialiasing, False)
 
                 self.last_point = event.pos()
