@@ -5,7 +5,7 @@ import sys
 from PyQt6.QtCore import Qt, QRect, QSize, QPoint, QPointF
 from PyQt6.QtGui import QAction, QImage, QPainter, QColor, QPen, QCursor, QBrush, QPolygon
 from PyQt6.QtWidgets import QApplication, QMainWindow, QToolBar, QPushButton, QWidget, QGroupBox, QSlider, \
-    QComboBox, QHBoxLayout
+    QComboBox, QHBoxLayout, QColorDialog
 
 
 class GraphicsEditor(QMainWindow):
@@ -68,7 +68,7 @@ class GraphicsEditor(QMainWindow):
         brush_size_slider.setTickPosition(QSlider.TickPosition.TicksAbove)
         brush_size_slider.setTickInterval(1)
         brush_size_slider.setObjectName("brushSizeSlider")
-        brush_size_slider.setGeometry(240, 35, 200, 45)
+        brush_size_slider.setGeometry(540, 35, 200, 45)
         brush_size_slider.valueChanged.connect(self.set_brush_size)
 
         # Компоновщик для кнопок выбора типа кисти
@@ -90,8 +90,14 @@ class GraphicsEditor(QMainWindow):
         clear_button = QPushButton("Очистить", self)
         clear_button.clicked.connect(self.clear_drawing_area)
 
+        color_button = QPushButton("Выбрать цвет", self)
+        color_button.clicked.connect(self.open_color_dialog)
+
         # Добавление выпадающего список и кнопку в компоновщик
         brush_layout.addWidget(brush_type_combo)
+        brush_layout.addWidget(clear_button)
+        brush_layout.addWidget(brush_type_combo)
+        brush_layout.addWidget(color_button)  # Добавляем кнопку выбора цвета
         brush_layout.addWidget(clear_button)
 
         # Геометрия компоновки
@@ -165,7 +171,7 @@ class GraphicsEditor(QMainWindow):
 
                 else:
                     pen = QPen()
-                    pen.setColor(QColor(Qt.GlobalColor.red))
+                    pen.setColor(self.brush_color)
                     brush.setColor(self.brush_color)
                     brush.setStyle(Qt.BrushStyle.SolidPattern)
                     painter.setPen(pen)
@@ -258,6 +264,11 @@ class GraphicsEditor(QMainWindow):
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
             self.drawing = False
+
+    def open_color_dialog(self):
+        color = QColorDialog.getColor(self.brush_color, self)
+        if color.isValid():
+            self.brush_color = color
 
 
 if __name__ == '__main__':
