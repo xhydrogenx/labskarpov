@@ -1,6 +1,9 @@
 import math
 from abc import ABC, abstractmethod
 
+import numpy as np
+from matplotlib import pyplot as plt
+
 
 class Equation(ABC):
     @abstractmethod
@@ -25,13 +28,6 @@ class QuadraticEquation(Equation):
         return 2 * self.a * x + self.b
 
 
-quadratic_eq = QuadraticEquation(2, 3, 1)
-result = quadratic_eq.value(4)
-derivative_result = quadratic_eq.derivative(4)
-print(result)
-print(derivative_result)
-
-
 class SinEquation(Equation):
     def __init__(self, a):
         self.a = a
@@ -43,8 +39,20 @@ class SinEquation(Equation):
         return (self.a * x * math.cos(self.a * x) - math.sin(self.a * x)) / x ** 2
 
 
-sin_equation = SinEquation(5)
-sin_result = sin_equation.value(6)
-derivative_sin_result = sin_equation.derivative(6)
-print(sin_result)
-print(derivative_sin_result)
+def plot_equation(equation, x1, x2, num_points=1000):
+    x_values = np.linspace(x1, x2, num_points)
+    y_values = [equation.value(x) for x in x_values]
+
+    plt.plot(x_values, y_values)
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.title('График функции')
+    plt.grid()
+    plt.show()
+
+
+quadratic_eq = QuadraticEquation(2, 3, 1)
+plot_equation(quadratic_eq, -5, 5)
+
+sine_over_x_eq = SinEquation(2)
+plot_equation(sine_over_x_eq, 0.01, 5)
