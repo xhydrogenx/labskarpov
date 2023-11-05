@@ -8,7 +8,7 @@ regexs_dict = {
     'mail': r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
     'street': r'^ул\.\s+([^д]+)\s+д\.\s+(\d+/\d+)$'
 }
-
+# 132
 test_data = ["a",
              "aaaaaa",
              "a aa a",
