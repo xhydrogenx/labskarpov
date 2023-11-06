@@ -57,8 +57,8 @@ plot_equation(quadratic_eq, -5, 5)
 sine_over_x_eq = SinEquation(2)
 plot_equation(sine_over_x_eq, 0.01, 5)
 
-        
-class RectangleIntegrator:
+
+class Integrator(ABC):
     def __init__(self, equation, a, b, h=None, N=None):
         self.equation = equation
         self.a = a
@@ -73,6 +73,16 @@ class RectangleIntegrator:
         else:
             raise ValueError("Нужно указать h или N")
 
+    @abstractmethod
+    def integrate(self):
+        pass
+
+    @abstractmethod
+    def get_method_name(self):
+        pass
+
+
+class RectangleIntegrator(Integrator):
     def integrate(self):
         result = 0
         x = self.a
@@ -81,22 +91,11 @@ class RectangleIntegrator:
             x += self.h
         return result
 
+    def get_method_name(self):
+        return "Метод прямоугольников"
 
-class TrapezoidIntegrator:
-    def __init__(self, equation, a, b, h=None, N=None):
-        self.equation = equation
-        self.a = a
-        self.b = b
 
-        if h is not None:
-            self.h = h
-            self.N = None
-        elif N is not None:
-            self.h = (b - a) / N
-            self.N = N
-        else:
-            raise ValueError("Нужно указать h или N")
-
+class TrapezoidIntegrator(Integrator):
     def integrate(self):
         result = 0
         x = self.a
@@ -104,6 +103,9 @@ class TrapezoidIntegrator:
             result += (self.equation.value(x) + self.equation.value(x + self.h)) * self.h / 2
             x += self.h
         return result
+
+    def get_method_name(self):
+        return "Метод трапеции"
 
 
 quadratic_eq = QuadraticEquation(2, 3, 1)
