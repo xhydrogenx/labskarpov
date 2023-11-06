@@ -56,3 +56,62 @@ plot_equation(quadratic_eq, -5, 5)
 
 sine_over_x_eq = SinEquation(2)
 plot_equation(sine_over_x_eq, 0.01, 5)
+
+        
+class RectangleIntegrator:
+    def __init__(self, equation, a, b, h=None, N=None):
+        self.equation = equation
+        self.a = a
+        self.b = b
+
+        if h is not None:
+            self.h = h
+            self.N = None
+        elif N is not None:
+            self.h = (b - a) / N
+            self.N = N
+        else:
+            raise ValueError("Нужно указать h или N")
+
+    def integrate(self):
+        result = 0
+        x = self.a
+        while x < self.b:
+            result += self.equation.value(x) * self.h
+            x += self.h
+        return result
+
+
+class TrapezoidIntegrator:
+    def __init__(self, equation, a, b, h=None, N=None):
+        self.equation = equation
+        self.a = a
+        self.b = b
+
+        if h is not None:
+            self.h = h
+            self.N = None
+        elif N is not None:
+            self.h = (b - a) / N
+            self.N = N
+        else:
+            raise ValueError("Нужно указать h или N")
+
+    def integrate(self):
+        result = 0
+        x = self.a
+        while x < self.b:
+            result += (self.equation.value(x) + self.equation.value(x + self.h)) * self.h / 2
+            x += self.h
+        return result
+
+
+quadratic_eq = QuadraticEquation(2, 3, 1)
+
+rect_integrator = RectangleIntegrator(quadratic_eq, 0, 4, h=0.1)
+result_rect = rect_integrator.integrate()
+print("Результат интегрирования методом прямоугольников:", result_rect)
+
+trapezoid_integrator = TrapezoidIntegrator(quadratic_eq, 0, 4, N=100)
+result_trap = trapezoid_integrator.integrate()
+print("Результат интегрирования методом трапеций:", result_trap)
