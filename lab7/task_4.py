@@ -11,7 +11,7 @@ def is_valid_email(email: str):
 # Проверка подходящих значений
 def test_valid_emails():
     assert is_valid_email("test@test.com") == True
-    assert is_valid_email("user@example.co.uk") == True
+    assert is_valid_email("user@example.co.ru") == True
     assert is_valid_email("user1234@example1234.com") == True
 
 
@@ -25,11 +25,11 @@ def test_invalid_emails():
 # Дополнительные варианты проверки, для адресов с числами и символами
 def test_valid_email_with_numbers():
     assert is_valid_email("user1234@example.com") == True
-    assert is_valid_email("john.doe1234@gmail.com") == True
+    assert is_valid_email("ivan.karpov1234@gmail.com") == True
 
 
 def test_valid_email_with_special_characters():
-    assert is_valid_email("alice.doe@example.co.uk") == True
+    assert is_valid_email("ivan.karpov@example.co.ru") == True
 
 
 if __name__ == '__main__':
