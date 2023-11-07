@@ -3,7 +3,7 @@ import re
 
 
 # Основная функция проверки почты
-def is_valid_email(email):
+def is_valid_email(email: str):
     pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
     return bool(re.match(pattern, email))  # Преобразование в булево значение для проверки на истину
 
