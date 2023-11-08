@@ -80,7 +80,7 @@ class RectangleIntegrator(Integrator):
                 integration_result += f"x = {x:.4f}, y = {result:.4f}\n"
                 x += self.h
         print(f"Метод прямоугольников: {integration_result}")
-        return result
+        return result, integration_result
 
     def get_method_name(self):
         return "Метод прямоугольников"
@@ -100,7 +100,7 @@ class TrapezoidIntegrator(Integrator):
                 integration_result += f"x = {x:.4f}, y = {result:.4f}\n"
                 x += self.h
         print(f"Метод трапеций: {integration_result}")
-        return result
+        return result, integration_result
 
     def get_method_name(self):
         return "Метод трапеции"
@@ -128,8 +128,8 @@ quadratic_eq = QuadraticEquation(2, 3, 1)
 
 rect_integrator = RectangleIntegrator(quadratic_eq, 0, 4, h=0.1)
 result_rect = rect_integrator.integrate()
-print("Результат интегрирования методом прямоугольников:", result_rect)
+print("Результат интегрирования методом прямоугольников:", result_rect[0])
 
 trapezoid_integrator = TrapezoidIntegrator(quadratic_eq, 0, 4, N=100)
 result_trap = trapezoid_integrator.integrate()
-print("Результат интегрирования методом трапеций:", result_trap)
+print("Результат интегрирования методом трапеций:", result_trap[0])
