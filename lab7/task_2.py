@@ -4,7 +4,7 @@ import math
 
 def solve_quadratic_equation(a, b, c):
     if a == 0:
-        raise ValueError("Коэффициент a должен быть не равен 0")
+        raise ValueError("Коэффициент a не должен быть равен 0")
 
     D = b * b - 4 * a * c
     if D > 0:

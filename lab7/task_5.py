@@ -15,12 +15,15 @@ def test_valid_numbers():
 
 
 def test_empty_string():
-    assert sum_of_digits("") == 0
+    with pytest.raises(ValueError):
+        sum_of_digits("12345")
 
 
 def test_non_numeric_characters():
-    assert sum_of_digits("abc123") == 6
-    assert sum_of_digits("12x34") == 10
+    with pytest.raises(ValueError):
+        sum_of_digits("12x34")
+    with pytest.raises(ValueError):
+        sum_of_digits("abc123")
 
 
 def test_invalid_input():
