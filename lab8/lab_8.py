@@ -71,12 +71,15 @@ class RectangleIntegrator(Integrator):
     def integrate(self):
         result = 0
         x = self.a
+        integration_result = ""
         with open('rect_integration_results.txt', 'w') as f:
             f.truncate(0)
             while x < self.b:
                 result += self.equation.value(x) * self.h
                 f.write(f"x = {x:.4f}, y = {result:.4f}\n")
+                integration_result += f"x = {x:.4f}, y = {result:.4f}\n"
                 x += self.h
+        print(f"Метод прямоугольников: {integration_result}")
         return result
 
     def get_method_name(self):
@@ -87,13 +90,16 @@ class TrapezoidIntegrator(Integrator):
     def integrate(self):
         result = 0
         x = self.a
+        integration_result = ""
         with open('trapezoid_integration_results.txt', 'w') as f:
             # truncate позволяет очищать файл перед тем как записывать новые значения
             f.truncate(0)
             while x < self.b:
                 result += (self.equation.value(x) + self.equation.value(x + self.h)) * self.h / 2
                 f.write(f"x = {x:.4f}, y = {result:.4f}\n")
+                integration_result += f"x = {x:.4f}, y = {result:.4f}\n"
                 x += self.h
+        print(f"Метод трапеций: {integration_result}")
         return result
 
     def get_method_name(self):
@@ -127,4 +133,3 @@ print("Результат интегрирования методом прямо
 trapezoid_integrator = TrapezoidIntegrator(quadratic_eq, 0, 4, N=100)
 result_trap = trapezoid_integrator.integrate()
 print("Результат интегрирования методом трапеций:", result_trap)
-
