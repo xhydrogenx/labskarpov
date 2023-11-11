@@ -1,6 +1,7 @@
 import os
 import hashlib
 import asyncio
+import datetime
 
 
 async def find_and_remove_duplicates(directory: str, log_file: str):
@@ -8,7 +9,7 @@ async def find_and_remove_duplicates(directory: str, log_file: str):
     file_hashes = {}
 
     with open(log_file, "a", encoding="utf-8") as log:
-        log.truncate(0)
+        # log.truncate(0)
         for root, _, files in os.walk(directory):
             for file in files:
                 file_path = os.path.join(root, file)
@@ -18,7 +19,8 @@ async def find_and_remove_duplicates(directory: str, log_file: str):
                     file_hash = hashlib.md5(file_content).hexdigest()
                     if file_hash in file_hashes:
                         duplicate_path = file_hashes[file_hash]
-                        log.write(f"Дубликат найден: {file_path}, удален: {duplicate_path}\n")
+                        current_time = datetime.datetime.now()
+                        log.write(f"{current_time} | Дубликат найден: {file_path}, удален: {duplicate_path}\n")
                         try:
                             os.unlink(file_path)
                         except Exception as e:
